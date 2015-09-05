@@ -48,6 +48,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
             if(mydb.getAllTask().contains(value)){
            /* int value = extras.getInt("id");
             if (value > 0) {*/
+                getActionBar().setTitle("Task Info");
                 Cursor rs = mydb.getData(value);
                // id_To_Update = value;
                 rs.moveToFirst();
@@ -181,6 +182,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.Edit_Task:
+                getActionBar().setTitle("Edit Task");
                 Button b = (Button) findViewById(R.id.saveBtn);
                 b.setVisibility(View.VISIBLE);
                 setTask.setEnabled(true);
