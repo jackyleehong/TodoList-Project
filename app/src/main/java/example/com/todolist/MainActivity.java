@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,10 +90,12 @@ public class MainActivity extends ListActivity {
         TextView taskTextView = (TextView) v.findViewById(R.id.taskTextView);
         String task = taskTextView.getText().toString();
 
-        String sql = String.format("DELETE FROM %s WHERE %s ='%s'", TaskContract.TABLE, TaskContract.Columns.TASK, task);
+       // String sql = String.format("DELETE FROM %s WHERE %s ='%s'", TaskContract.TABLE, TaskContract.Columns.TASK, task);
         helper = new TaskDBHelper(MainActivity.this);
-        SQLiteDatabase sqlDB = helper.getWritableDatabase();
-        sqlDB.execSQL(sql);
+        helper.deleteTask(task);
+        Log.d("Task delete", "Deleted");
+       /* SQLiteDatabase sqlDB = helper.getWritableDatabase();
+        sqlDB.execSQL(sql);*/
        updateList();
     }
 

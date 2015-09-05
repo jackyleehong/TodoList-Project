@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -20,11 +21,12 @@ import example.com.todolist.db.TaskDBHelper;
 
 public class TaskAddingActivity extends Activity implements View.OnClickListener,View.OnFocusChangeListener {
     private TaskDBHelper mydb;
-    int id_To_Update = 0;
+    //String id_To_Update = 0;
     Button saveTask;
     EditText setTask;
     EditText setTime;
     EditText setDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,17 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         saveTask = (Button) findViewById(R.id.saveBtn);
 
 
+
+
         mydb = new TaskDBHelper(this);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            int value = extras.getInt("id");
-            if (value > 0) {
+            String value = extras.getString("task");
+            if(mydb.getAllTask().contains(value)){
+           /* int value = extras.getInt("id");
+            if (value > 0) {*/
                 Cursor rs = mydb.getData(value);
-                id_To_Update = value;
+               // id_To_Update = value;
                 rs.moveToFirst();
                 Toast.makeText(this, rs + "", Toast.LENGTH_SHORT).show();
                 String task = rs.getString(rs.getColumnIndex(TaskContract.Columns.TASK));
@@ -104,9 +110,13 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            int Value = extras.getInt("id");
-            if (Value > 0) {
-                if (mydb.updateTask(id_To_Update, task, time, date)) {
+
+            String value = extras.getString("task");
+            if(mydb.getAllTask().contains(value)){
+           /* int value = extras.getInt("id");
+            if (value > 0) {*/
+
+                if (mydb.updateTask( value,task, time, date)) {
                     Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
@@ -114,7 +124,6 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), "not Updated", Toast.LENGTH_SHORT).show();
                 }
             } else {
-
                 if (mydb.insertTask(task, time, date)) {
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                 } else {

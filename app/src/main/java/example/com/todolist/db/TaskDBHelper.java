@@ -50,6 +50,11 @@ public class TaskDBHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(String.format("SELECT * FROM %s WHERE id = %s",TaskContract.TABLE,TaskContract.Columns._ID),null);
         return res;
     }
+    public Cursor getData(String task){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(String.format("SELECT * FROM %s WHERE %s = '%s'", TaskContract.TABLE, TaskContract.Columns.TASK,task), null);
+        return res;
+    }
 
     public int numberOfRows(){
 
@@ -57,19 +62,19 @@ public class TaskDBHelper extends SQLiteOpenHelper {
         int numRows = (int) DatabaseUtils.queryNumEntries(db,TaskContract.TABLE);
         return numRows;
     }
-    public boolean updateTask(Integer id,String task, String time, String date){
+    public boolean updateTask(String oriTask,String task, String time, String date){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TaskContract.Columns.TASK, task);
         contentValues.put(TaskContract.Columns.DATE,date);
         contentValues.put(TaskContract.Columns.TIME,time);
-        db.update(TaskContract.TABLE, contentValues, "id= ? ", new String[]{Integer.toString(id)});
+        db.update(TaskContract.TABLE, contentValues, "task= ? ", new String[]{oriTask});
         return true;
     }
 
-    public Integer deleteTask(Integer id){
+    public Integer deleteTask(String task){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TaskContract.TABLE, "id = ? ", new String[]{Integer.toString(id)});
+        return db.delete(TaskContract.TABLE, "task = ? ", new String[]{task});
 
     }
     public ArrayList<String> getAllTask()

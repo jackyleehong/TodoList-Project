@@ -12,7 +12,7 @@ public class TaskContract {
 
     public class Columns{
         public static final String TASK = "task";
-        public static final String _ID = "id";
+        public static final String _ID = BaseColumns._ID;
         public static final String TIME = "time";
         public static final String DATE = "date";
     }

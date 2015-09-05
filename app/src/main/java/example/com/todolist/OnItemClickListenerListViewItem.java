@@ -23,8 +23,8 @@ public class OnItemClickListenerListViewItem implements AdapterView.OnItemClickL
          // c.moveToPosition(position);
        // int rowId = c.getInt(c.getColumnIndexOrThrow("_id"));
         TextView textViewItem = (TextView)view.findViewById(R.id.taskTextView);
-        TextView timeViewItem = (TextView)view.findViewById(R.id.timeTextView);
-        TextView dateViewItem = (TextView)view.findViewById(R.id.dateTextView);
+     /*   TextView timeViewItem = (TextView)view.findViewById(R.id.timeTextView);
+        TextView dateViewItem = (TextView)view.findViewById(R.id.dateTextView);*/
         String listItemText = textViewItem.getText().toString();
        /* String listItemTime = timeViewItem.getText().toString();
         String listItemDate = dateViewItem.getText().toString();*/
@@ -33,7 +33,8 @@ public class OnItemClickListenerListViewItem implements AdapterView.OnItemClickL
       //4/9/2015 update
         int id_To_Search = position +1;
         Bundle dataBundle = new Bundle();
-        dataBundle.putInt("id", id_To_Search);
+        //dataBundle.putInt("id", id_To_Search);
+        dataBundle.putString("task",listItemText);
         Intent intent = new Intent(context, TaskAddingActivity.class);
         intent.putExtras(dataBundle);
         context.startActivity(intent);
