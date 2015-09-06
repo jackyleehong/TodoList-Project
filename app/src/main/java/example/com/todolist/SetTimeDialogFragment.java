@@ -114,7 +114,7 @@ public class SetTimeDialogFragment extends DialogFragment implements TimePickerD
             strBuilder.append(minute + " ").append(format);
         }
 
-        mListener.setText(strBuilder);
+        mListener.setText(strBuilder,hourOfDay,minute);
        // setTime.setText(strBuilder);
     }
 
@@ -152,7 +152,7 @@ public class SetTimeDialogFragment extends DialogFragment implements TimePickerD
      * >Communicating with Other Fragments</a> for more information.*/
     public interface OnButtonClickedListener {
         // TODO: Update argument type and name
-        public void setText(StringBuilder str);
+        public void setText(StringBuilder str,int hourOfDay, int min);
     }
 
 }
