@@ -1,7 +1,9 @@
 package example.com.todolist;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,13 +21,15 @@ import android.widget.Toast;
 import example.com.todolist.db.TaskContract;
 import example.com.todolist.db.TaskDBHelper;
 
-public class TaskAddingActivity extends Activity implements View.OnClickListener,View.OnFocusChangeListener {
+public class TaskAddingActivity extends Activity implements View.OnClickListener,View.OnFocusChangeListener,SetTimeDialogFragment.OnButtonClickedListener {
     private TaskDBHelper mydb;
     //String id_To_Update = 0;
     Button saveTask;
     EditText setTask;
     EditText setTime;
     EditText setDate;
+    EditText setReminder;
+
 
 
     @Override
@@ -36,6 +40,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         setTask = (EditText) findViewById(R.id.edtxtTask);
         setTime = (EditText) findViewById(R.id.edtxtTime);
         setDate = (EditText) findViewById(R.id.edtxtDate);
+        setReminder = (EditText) findViewById(R.id.reminderTime);
         saveTask = (Button) findViewById(R.id.saveBtn);
 
 
@@ -56,6 +61,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 String task = rs.getString(rs.getColumnIndex(TaskContract.Columns.TASK));
                 String date = rs.getString(rs.getColumnIndex(TaskContract.Columns.DATE));
                 String time = rs.getString(rs.getColumnIndex(TaskContract.Columns.TIME));
+                String reminder = rs.getString(rs.getColumnIndex(TaskContract.Columns.Reminder));
 
                 if (!rs.isClosed()) {
                     rs.close();
@@ -74,12 +80,18 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTime.setText((CharSequence) time);
                 setTime.setFocusable(false);
                 setTime.setClickable(false);
+
+                setReminder.setText((CharSequence) reminder);
+                setReminder.setFocusable(false);
+                setReminder.setClickable(false);
             } else {
                // saveTask.setOnClickListener(this);
                 setTime.setOnClickListener(this);
                 setDate.setOnClickListener(this);
                 setTime.setOnFocusChangeListener(this);
                 setDate.setOnFocusChangeListener(this);
+                setReminder.setOnClickListener(this);
+                setReminder.setOnFocusChangeListener(this);
             }
         }
 
@@ -108,6 +120,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         String task = setTask.getText().toString();
         String date = setDate.getText().toString();
         String time = setTime.getText().toString();
+        String reminder = setReminder.getText().toString();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -117,7 +130,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
            /* int value = extras.getInt("id");
             if (value > 0) {*/
 
-                if (mydb.updateTask( value,task, time, date)) {
+                if (mydb.updateTask( value,task, time, date,reminder)) {
                     Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
@@ -125,7 +138,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), "not Updated", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                if (mydb.insertTask(task, time, date)) {
+                if (mydb.insertTask(task, time, date,reminder)) {
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "not done", Toast.LENGTH_SHORT).show();
@@ -136,13 +149,26 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         }
     }
 
+    public void setText(StringBuilder str){
+        if(setTime.isFocused()){
+            setTime.setText(str);
+            //setTime.getNextFocusDownId();
+        }else if(setReminder.isFocused()){
+            setReminder.setText(str);
+        }
+    }
+
+
+
     @Override
     public void onClick(View v) {
        if (v.getId() == R.id.edtxtTime) {
             setTime(v);
         } else if (v.getId() == R.id.edtxtDate) {
             setDate(v);
-        } else {
+        } else if (v.getId() == R.id.reminderTime) {
+           setTime(v);
+       }else {
             return;
         }
     }
@@ -153,7 +179,9 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
             setTime(v);
         } else if (v.getId() == R.id.edtxtDate && hasFocus == true) {
             setDate(v);
-        } else {
+        } else if (v.getId() == R.id.reminderTime && hasFocus == true) {
+            setTime(v);
+        }else {
             return;
         }
     }
@@ -196,10 +224,17 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTime.setEnabled(true);
                 setTime.setFocusableInTouchMode(true);
                 setTime.setClickable(true);
+
+                setReminder.setEnabled(true);
+                setReminder.setFocusableInTouchMode(true);
+                setReminder.setClickable(true);
+
                 setTime.setOnClickListener(this);
                 setDate.setOnClickListener(this);
                 setTime.setOnFocusChangeListener(this);
                 setDate.setOnFocusChangeListener(this);
+                setReminder.setOnClickListener(this);
+                setReminder.setOnFocusChangeListener(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

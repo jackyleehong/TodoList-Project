@@ -47,6 +47,20 @@
         android:layout_below="@+id/txtDate"
         android:id="@+id/edtxtDate"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edtxtDate"
+        android:text="Reminder"
+        android:id="@+id/reminder"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Set reminder here..."
+        android:textStyle="italic"
+        android:layout_below="@+id/reminder"
+        android:id="@+id/reminderTime"
+        />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

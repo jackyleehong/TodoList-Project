@@ -15,5 +15,6 @@ public class TaskContract {
         public static final String _ID = BaseColumns._ID;
         public static final String TIME = "time";
         public static final String DATE = "date";
+        public static final String Reminder = "reminder";
     }
 }
