@@ -183,6 +183,11 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                         Intent myIntent = new Intent(TaskAddingActivity.this, AlarmReceiver.class);
                         pendingIntent = PendingIntent.getBroadcast(TaskAddingActivity.this, 0, myIntent, 0);
                         alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 1000 * 60 * 1, pendingIntent);
+                    } else {
+                        alarmManager.cancel(pendingIntent);
+                        setAlarmText("");
+                        Log.d("MyActivity", "Alarm Off");
+                    }
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                 } else {
