@@ -16,13 +16,13 @@ import java.util.ArrayList;
 public class TaskDBHelper extends SQLiteOpenHelper {
 
     public TaskDBHelper(Context context){
-        super(context,TaskContract.DB_NAME,null,TaskContract.DB_VERSION);
+        super(context, TaskContract.DB_NAME, null, TaskContract.DB_VERSION);
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqlDB){
-        String sqlQuery = String.format("CREATE TABLE %s (" + "%s INTEGER PRIMARY KEY AUTOINCREMENT, " + "%s TEXT , %s TEXT ,%s TEXT, %s TEXT )",TaskContract.TABLE,TaskContract.Columns._ID,TaskContract.Columns.TASK,TaskContract.Columns.DATE,TaskContract.Columns.TIME,TaskContract.Columns.Reminder);
+        String sqlQuery = String.format("CREATE TABLE %s (" + "%s INTEGER PRIMARY KEY AUTOINCREMENT, " + "%s TEXT ,%s TEXT , %s TEXT ,%s TEXT, %s TEXT )",TaskContract.TABLE,TaskContract.Columns._ID,TaskContract.Columns.TASK,TaskContract.Columns.DESCRIPTION,TaskContract.Columns.DATE,TaskContract.Columns.TIME,TaskContract.Columns.Reminder);
         Log.d("TaskDBHelper", "Query to form table: " + sqlQuery);
         sqlDB.execSQL(sqlQuery);
 
@@ -35,10 +35,11 @@ public class TaskDBHelper extends SQLiteOpenHelper {
     }
 
 
-    public boolean insertTask(String task, String time, String date,String reminder){
+    public boolean insertTask(String task, String description, String time, String date,String reminder){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TaskContract.Columns.TASK, task);
+        contentValues.put(TaskContract.Columns.DESCRIPTION,description);
         contentValues.put(TaskContract.Columns.DATE,date);
         contentValues.put(TaskContract.Columns.TIME, time);
         contentValues.put(TaskContract.Columns.Reminder, reminder);
@@ -73,10 +74,11 @@ public class TaskDBHelper extends SQLiteOpenHelper {
         int numRows = (int) DatabaseUtils.queryNumEntries(db,TaskContract.TABLE);
         return numRows;
     }
-    public boolean updateTask(String oriTask,String task, String time, String date,String reminder){
+    public boolean updateTask(String oriTask,String task, String description, String time, String date,String reminder){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TaskContract.Columns.TASK, task);
+        contentValues.put(TaskContract.Columns.DESCRIPTION,description);
         contentValues.put(TaskContract.Columns.DATE,date);
         contentValues.put(TaskContract.Columns.TIME,time);
         contentValues.put(TaskContract.Columns.Reminder, reminder);
