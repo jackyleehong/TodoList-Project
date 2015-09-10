@@ -2,6 +2,9 @@ package example.com.todolist.db;
 
 import android.provider.BaseColumns;
 
+import java.sql.Time;
+
+
 /**
  * Created by Lee on 2/9/2015.
  */
@@ -15,6 +18,7 @@ public class TaskContract {
         public static final String _ID = BaseColumns._ID;
         public static final String TIME = "time";
         public static final String DATE = "date";
-        public static final String Reminder = "reminder";
+        public static final String Reminder ="Reminder";
+
     }
 }

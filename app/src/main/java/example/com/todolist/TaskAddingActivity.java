@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -15,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +36,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
     EditText setTime;
     EditText setDate;
     EditText setReminder;
+    CheckBox reminderchk;
     int reminderHour = 0,reminderMin = 0 ;
     AlarmManager alarmManager;
     private static TaskAddingActivity inst;
@@ -40,31 +44,20 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
   //  private TextView alarmTextView;
 
 
-    public static TaskAddingActivity instance() {
-        return inst;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        inst = this;
-    }
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_adding);
+        reminderchk = (CheckBox)findViewById(R.id.reminderChk);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
       //  alarmTextView = (TextView) findViewById(R.id.alarmText);
         setTask = (EditText) findViewById(R.id.edtxtTask);
         setTime = (EditText) findViewById(R.id.edtxtTime);
         setDate = (EditText) findViewById(R.id.edtxtDate);
         setReminder = (EditText) findViewById(R.id.reminderTime);
         saveTask = (Button) findViewById(R.id.saveBtn);
-
+      //  alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 
 
@@ -104,9 +97,31 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTime.setClickable(false);
 
                 setReminder.setText((CharSequence) reminder);
-                setReminder.setFocusable(false);
-                setReminder.setClickable(false);
+
+
             } else {
+                setReminder.setEnabled(false);
+                setReminder.setFocusableInTouchMode(false);
+                setReminder.setClickable(false);
+                reminderchk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked == true) {
+                            setReminder.setEnabled(true);
+                            setReminder.setFocusableInTouchMode(true);
+                            setReminder.setClickable(true);
+                          //  setReminder.setOnClickListener(setReminder.getCl);
+
+                        } else {
+                            setReminder.setEnabled(false);
+                            setReminder.setFocusableInTouchMode(false);
+                            setReminder.setClickable(false);
+                            setReminder.setFocusable(false);
+
+                        }
+                    }
+                });
                // saveTask.setOnClickListener(this);
                 setTime.setOnClickListener(this);
                 setDate.setOnClickListener(this);
@@ -114,6 +129,8 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setDate.setOnFocusChangeListener(this);
                 setReminder.setOnClickListener(this);
                 setReminder.setOnFocusChangeListener(this);
+
+
             }
         }
 
@@ -172,22 +189,22 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
 
                 if (mydb.updateTask( value,task, time, date,reminder)) {
                     Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_SHORT).show();
-                    if (reminder != "") {
+                 /*   if (reminder != "") {
                         Log.d("MyActivity", "Alarm On");
-                        TaskAddingActivity t = new TaskAddingActivity();
+                       MainActivity m = new MainActivity();
 
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(Calendar.HOUR_OF_DAY, reminderHour);
                         calendar.set(Calendar.MINUTE, reminderMin);
                         calendar.set(Calendar.SECOND,0);
-                        Intent myIntent = new Intent(TaskAddingActivity.this, AlarmReceiver.class);
+                        Intent myIntent = new Intent(this, AlarmReceiver.class);
                         pendingIntent = PendingIntent.getBroadcast(TaskAddingActivity.this, 0, myIntent, 0);
                         alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 1000 * 60 * 1, pendingIntent);
                     } else {
                         alarmManager.cancel(pendingIntent);
                         setAlarmText("");
                         Log.d("MyActivity", "Alarm Off");
-                    }
+                    }*/
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                 } else {
@@ -195,22 +212,27 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 }
             } else {
                 if (mydb.insertTask(task, time, date,reminder)) {
-                    if (reminder != "") {
+                    /*if (reminder != "") {
                         Log.d("MyActivity", "Alarm On");
-                        TaskAddingActivity t = new TaskAddingActivity();
+                       // TaskAddingActivity t = new TaskAddingActivity();
 
                         Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(System.currentTimeMillis());
                         calendar.set(Calendar.HOUR_OF_DAY, reminderHour);
+                        Log.d("hour", reminderHour + "");
+
                         calendar.set(Calendar.MINUTE, reminderMin);
-                        calendar.set(Calendar.SECOND,0);
+                        Log.d("minute", reminderMin + "");
+                      //  calendar.set(Calendar.SECOND, 0);
+                    //    calendar.getTime();
                         Intent myIntent = new Intent(TaskAddingActivity.this, AlarmReceiver.class);
                         pendingIntent = PendingIntent.getBroadcast(TaskAddingActivity.this, 0, myIntent, 0);
-                        alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 1000 * 60 * 1, pendingIntent);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),*//* 1000 * 60 * 2,*//* pendingIntent);
                     } else {
                         alarmManager.cancel(pendingIntent);
                         setAlarmText("");
                         Log.d("MyActivity", "Alarm Off");
-                    }
+                    }*/
                     Toast.makeText(getApplicationContext(), "done", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "not done", Toast.LENGTH_SHORT).show();
@@ -298,10 +320,23 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTime.setEnabled(true);
                 setTime.setFocusableInTouchMode(true);
                 setTime.setClickable(true);
+                reminderchk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-                setReminder.setEnabled(true);
-                setReminder.setFocusableInTouchMode(true);
-                setReminder.setClickable(true);
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked == true) {
+                            setReminder.setEnabled(true);
+                            setReminder.setFocusableInTouchMode(true);
+                            setReminder.setClickable(true);
+
+                        } else {
+                            setReminder.setEnabled(false);
+                            setReminder.setFocusableInTouchMode(false);
+                            setReminder.setClickable(false);
+                        }
+                    }
+                });
+
 
                 setTime.setOnClickListener(this);
                 setDate.setOnClickListener(this);
@@ -309,6 +344,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setDate.setOnFocusChangeListener(this);
                 setReminder.setOnClickListener(this);
                 setReminder.setOnFocusChangeListener(this);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

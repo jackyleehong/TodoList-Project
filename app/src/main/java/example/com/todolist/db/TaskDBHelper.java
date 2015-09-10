@@ -56,6 +56,16 @@ public class TaskDBHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery(String.format("SELECT * FROM %s WHERE %s = '%s'", TaskContract.TABLE, TaskContract.Columns.TASK,task), null);
         return res;
     }
+    public Cursor findTask(String reminder){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s = '%s'",TaskContract.Columns.TASK ,TaskContract.TABLE, TaskContract.Columns.Reminder,reminder), null);
+        return res;
+    }
+    public Cursor findID(String reminder){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s = '%s'",TaskContract.Columns._ID ,TaskContract.TABLE, TaskContract.Columns.Reminder,reminder), null);
+        return res;
+    }
 
     public int numberOfRows(){
 
@@ -103,6 +113,31 @@ public class TaskDBHelper extends SQLiteOpenHelper {
         }
         return array_list;
     }
+    public ArrayList<String> getAllReminder()
+    {
+        ArrayList<String> array_list = new ArrayList<String>();
+        ArrayList<String> array_list1 = new ArrayList<String>();
+        ArrayList<String> array_list2 = new ArrayList<String>();
+        ArrayList<String> listAddAll = new ArrayList<String>();
+
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( String.format("select * from %s", TaskContract.TABLE),null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex(TaskContract.Columns.Reminder)));
+          /*  array_list1.add(res.getString(res.getColumnIndex(TaskContract.Columns.DATE)));
+            array_list2.add(res.getString(res.getColumnIndex(TaskContract.Columns.TIME)));
+            listAddAll.addAll(array_list);
+            listAddAll.addAll(array_list1);
+            listAddAll.addAll(array_list2);*/
+
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
 
 
 }

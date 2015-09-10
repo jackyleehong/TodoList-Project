@@ -27,7 +27,7 @@ public class AlarmService extends IntentService {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, TaskAddingActivity.class), 0);
+                new Intent(this, MainActivity.class), 0);
 
         Notification.Builder alamNotificationBuilder = new Notification.Builder(
                 this).setContentTitle("Alarm").setSmallIcon(R.drawable.ic_launcher)

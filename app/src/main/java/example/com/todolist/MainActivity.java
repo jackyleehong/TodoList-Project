@@ -1,10 +1,15 @@
 package example.com.todolist;
 
+import android.app.AlarmManager;
 import android.app.ListActivity;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
@@ -20,23 +27,54 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import example.com.todolist.db.TaskContract;
 import example.com.todolist.db.TaskDBHelper;
 
 public class MainActivity extends ListActivity {
+    int id = 1;
 
     private TaskDBHelper helper;
     private SimpleCursorAdapter listAdapter;
+    AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
+    public CheckBox reminderchk;
+    private static MainActivity inst;
+    private TextView alarmTextView;
 
+ SQLiteDatabase sql;
+
+
+   public static MainActivity instance() {
+        return inst;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        inst = this;
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        reminderchk = (CheckBox)findViewById(R.id.reminderChk);
+       // alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             updateList();
+
+
+
+
+
+
 
         // updateUI();
     }
+
+
 
     private void updateList() {
         ArrayList<String> array_list = new ArrayList<>();
@@ -51,6 +89,10 @@ public class MainActivity extends ListActivity {
 
 
             lv.setAdapter(adapter);
+            if(dbh.getAllReminder()!= null) {
+                setAlarm();
+            }
+
             lv.setOnItemClickListener(new OnItemClickListenerListViewItem());
         }
         if(array_list.isEmpty()){
@@ -64,36 +106,80 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    /*  private void updateUI() {
-          helper = new TaskDBHelper(MainActivity.this);
-          SQLiteDatabase sqlDB = helper.getReadableDatabase();
-          Cursor cursor = sqlDB.query(TaskContract.TABLE, new String[]{TaskContract.Columns._ID, TaskContract.Columns.TASK}, null, null, null, null, null);
+    public void setAlarm() {
+        final TaskDBHelper alarmhelper = new TaskDBHelper(this);
+        String[] alarm = new String[alarmhelper.getAllReminder().size()];
+        alarm = alarmhelper.getAllReminder().toArray(alarm);
+        for (final String eachAlarm : alarm) {
 
-          listAdapter = new SimpleCursorAdapter(
-                  this,
-                  R.layout.task_view,
-                  cursor,
-                  new String[]{TaskContract.Columns.TASK},
-                  new int[]{R.id.taskTextView},
-                  0
-          );
-        // this.setListAdapter(listAdapter);
-        //  ArrayAdapterItem adapter= new ArrayAdapterItem(this, R.layout.list_view_row_item,ObjectItemData);
+            //find the reminder time
+            String[] splitA = eachAlarm.split("\\W+");
+           final int hour = Integer.parseInt(splitA[0]);
+            final int min = Integer.parseInt(splitA[1]);
+           final String format = splitA[2];
 
-          final ListView listViewItems = (ListView)findViewById(R.id.mainList);
-          listViewItems.setAdapter(listAdapter);
-          listViewItems.setOnItemClickListener(new OnItemClickListenerListViewItem());
-      }*/
+            //find the task for the given reminder
+            Cursor taskCursor = alarmhelper.findTask(eachAlarm);
+            taskCursor.moveToFirst();
+            String task = taskCursor.getString(taskCursor.getColumnIndex(TaskContract.Columns.TASK));
+            if (!taskCursor.isClosed()) {
+                taskCursor.close();
+            }
+            Log.d("task", task);
+            Cursor idCursor = alarmhelper.findID(eachAlarm);
+            idCursor.moveToFirst();
+            final String id = idCursor.getString(idCursor.getColumnIndex(TaskContract.Columns._ID));
+            if (!idCursor.isClosed()) {
+                idCursor.close();
+            }
+                        Calendar calendar = Calendar.getInstance();
+                        if (format == "AM" && hour == 12) {
+                            calendar.set(Calendar.HOUR_OF_DAY, 0);
+                        }
+                        if (format == "PM" && hour == 12) {
+                            calendar.set(Calendar.HOUR_OF_DAY, 12);
+                        }else{
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                        }
+                        calendar.set(Calendar.MINUTE, min);
+                        calendar.set(Calendar.SECOND,0);
+                        calendar.set(Calendar.MILLISECOND,0);
+                        // calendar.setTimeInMillis(System.currentTimeMillis());
+                        Log.d("time", hour + " " + min + " " + format + " ");
+                        Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+                        Log.d("What is intent", myIntent + "");
+                        pendingIntent = PendingIntent.getBroadcast(MainActivity.this,Integer.parseInt(id), myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        Log.d("id",id+"");
+                        Log.d("What is pending intent", pendingIntent + "");
+
+
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), 24 * 60 * 60 * 1000, pendingIntent);
+
+                    Log.d("What is set", calendar.getTimeInMillis() + "");
+
+                    }
+
+
+    }
+    public void setAlarmText(String alarmText) {
+        Toast.makeText(this, alarmText + "", Toast.LENGTH_LONG).show();
+    }
+
 
     public void onDoneButtonClick(View view){
         View v = (View) view.getParent();
         TextView taskTextView = (TextView) v.findViewById(R.id.taskTextView);
         String task = taskTextView.getText().toString();
+        alarmManager.cancel(pendingIntent);
+        // setAlarmText("");
+        Log.d("MyActivity", "Alarm Off");
 
        // String sql = String.format("DELETE FROM %s WHERE %s ='%s'", TaskContract.TABLE, TaskContract.Columns.TASK, task);
         helper = new TaskDBHelper(MainActivity.this);
         helper.deleteTask(task);
         Log.d("Task delete", "Deleted");
+
        /* SQLiteDatabase sqlDB = helper.getWritableDatabase();
         sqlDB.execSQL(sql);*/
        updateList();
@@ -102,6 +188,11 @@ public class MainActivity extends ListActivity {
     private static boolean doesDatabaseExist(ContextWrapper context, String dbName) {
         File dbFile = context.getDatabasePath(dbName);
         return dbFile.exists();
+    }
+    public void onDestroy(){
+        super.onDestroy();
+    finish();
+
     }
 
 

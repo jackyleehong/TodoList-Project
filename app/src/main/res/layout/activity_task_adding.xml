@@ -42,7 +42,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Set time here..."
+        android:hint="Set date here..."
         android:textStyle="italic"
         android:layout_below="@+id/txtDate"
         android:id="@+id/edtxtDate"
@@ -58,9 +58,18 @@
         android:layout_height="wrap_content"
         android:hint="Set reminder here..."
         android:textStyle="italic"
+        android:editable="false"
         android:layout_below="@+id/reminder"
         android:id="@+id/reminderTime"
         />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Reminder"
+        android:checked="false"
+        android:id="@+id/reminderChk"
+        android:layout_alignRight="@+id/reminderTime"
+        android:layout_below="@id/reminderTime"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
