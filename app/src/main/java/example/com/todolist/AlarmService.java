@@ -18,25 +18,25 @@ public class AlarmService extends IntentService {
 
     @Override
     public void onHandleIntent(Intent intent) {
-        sendNotification("Wake Up! Wake Up!");
+//        sendNotification("Wake Up! Wake Up!");
     }
 
-    private void sendNotification(String msg) {
-        Log.d("AlarmService", "Preparing to send notification...: " + msg);
-        alarmNotificationManager = (NotificationManager) this
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
-
-        Notification.Builder alamNotificationBuilder = new Notification.Builder(
-                this).setContentTitle("Alarm").setSmallIcon(R.mipmap.ic_launcher)
-                .setStyle(new Notification.BigTextStyle().bigText(msg))
-                .setContentText(msg);
-
-
-        alamNotificationBuilder.setContentIntent(contentIntent);
-        alarmNotificationManager.notify(1, alamNotificationBuilder.build());
-        Log.d("AlarmService", "Notification sent.");
-    }
+//    private void sendNotification(String msg) {
+//        Log.d("AlarmService", "Preparing to send notification...: " + msg);
+//        alarmNotificationManager = (NotificationManager) this
+//                .getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+//                new Intent(this, MainActivity.class), 0);
+//
+//        Notification.Builder alamNotificationBuilder = new Notification.Builder(
+//                this).setContentTitle("Alarm").setSmallIcon(R.mipmap.ic_launcher)
+//                .setStyle(new Notification.BigTextStyle().bigText(msg))
+//                .setContentText(msg);
+//
+//
+//        alamNotificationBuilder.setContentIntent(contentIntent);
+//        alarmNotificationManager.notify(1, alamNotificationBuilder.build());
+//        Log.d("AlarmService", "Notification sent.");
+//    }
 }

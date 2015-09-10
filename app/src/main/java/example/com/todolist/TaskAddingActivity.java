@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import example.com.todolist.db.TaskContract;
 import example.com.todolist.db.TaskDBHelper;
@@ -33,6 +35,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
     //String id_To_Update = 0;
     Button saveTask;
     EditText setTask;
+    EditText setDescription;
     EditText setTime;
     EditText setDate;
     EditText setReminder;
@@ -53,6 +56,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
 
       //  alarmTextView = (TextView) findViewById(R.id.alarmText);
         setTask = (EditText) findViewById(R.id.edtxtTask);
+        setDescription = (EditText) findViewById(R.id.edtxtDescription);
         setTime = (EditText) findViewById(R.id.edtxtTime);
         setDate = (EditText) findViewById(R.id.edtxtDate);
         setReminder = (EditText) findViewById(R.id.reminderTime);
@@ -74,6 +78,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 rs.moveToFirst();
                 Toast.makeText(this, rs + "", Toast.LENGTH_SHORT).show();
                 String task = rs.getString(rs.getColumnIndex(TaskContract.Columns.TASK));
+                String description = rs.getString(rs.getColumnIndex(TaskContract.Columns.DESCRIPTION));
                 String date = rs.getString(rs.getColumnIndex(TaskContract.Columns.DATE));
                 String time = rs.getString(rs.getColumnIndex(TaskContract.Columns.TIME));
                 String reminder = rs.getString(rs.getColumnIndex(TaskContract.Columns.Reminder));
@@ -87,6 +92,10 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTask.setText((CharSequence) task);
                 setTask.setFocusable(false);
                 setTask.setClickable(false);
+
+                setDescription.setText((CharSequence) description);
+                setDescription.setFocusable(false);
+                setDescription.setClickable(false);
 
                 setDate.setText((CharSequence) date);
                 setDate.setFocusable(false);
@@ -175,6 +184,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
         EditText inputDate = (EditText)findViewById(R.id.edtxtDate);
         EditText inputTime = (EditText)findViewById(R.id.edtxtTime);*/
         String task = setTask.getText().toString();
+        String description = setDescription.getText().toString();
         String date = setDate.getText().toString();
         String time = setTime.getText().toString();
         String reminder = setReminder.getText().toString();
@@ -187,7 +197,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
            /* int value = extras.getInt("id");
             if (value > 0) {*/
 
-                if (mydb.updateTask( value,task, time, date,reminder)) {
+                if (mydb.updateTask( value,task, description, time, date,reminder)) {
                     Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_SHORT).show();
                  /*   if (reminder != "") {
                         Log.d("MyActivity", "Alarm On");
@@ -211,7 +221,7 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), "not Updated", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                if (mydb.insertTask(task, time, date,reminder)) {
+                if (mydb.insertTask(task, description, time, date,reminder)) {
                     /*if (reminder != "") {
                         Log.d("MyActivity", "Alarm On");
                        // TaskAddingActivity t = new TaskAddingActivity();
@@ -237,10 +247,42 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 } else {
                     Toast.makeText(getApplicationContext(), "not done", Toast.LENGTH_SHORT).show();
                 }
+                setAlarm();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
         }
+    }
+
+//    public void setAlarm(){
+//        String time[] = setTime.getText().toString().split(":");
+//        int timeInSecond = Integer.parseInt(time[0])*60*60 + Integer.parseInt(time[1])*60;
+//        Toast.makeText(this, timeInSecond, Toast.LENGTH_SHORT).show();
+//        Long alertTime = new GregorianCalendar().getTimeInMillis() + timeInSecond*1000;
+//        Intent alert = new Intent(this, AlarmReceiver.class);
+//        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, pendingIntent.getBroadcast(this, 1, alert, pendingIntent.FLAG_UPDATE_CURRENT));
+//    }
+    public void setAlarm(){
+        Intent intent = new Intent(this, NotifyService.class);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        String date[] = setDate.getText().toString().split("/");
+        String time[] = setReminder.getText().toString().replaceAll(" ", ":").split(":");
+        Log.d("date", date[0] + ":" + date[1] + ":" + time[0] + ":" + time[1] + ":" + time[2]);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, Integer.parseInt(time[1]));
+        calendar.set(Calendar.HOUR, Integer.parseInt(time[0]));
+        if(time[2].equals("AM"))
+            calendar.set(Calendar.AM_PM, Calendar.AM);
+        else
+            calendar.set(Calendar.AM_PM, Calendar.PM);
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date[0]));
+        calendar.set(Calendar.MONTH, Integer.parseInt(date[1]) - 1);
+        calendar.set(Calendar.YEAR, Integer.parseInt(date[2]));
+        Log.d("time", String.valueOf(calendar.getTimeInMillis()));
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 1000*60*60*24, pendingIntent);
     }
 
     public void setText(StringBuilder str,int hourOfDay,int min){
@@ -312,6 +354,10 @@ public class TaskAddingActivity extends Activity implements View.OnClickListener
                 setTask.setEnabled(true);
                 setTask.setFocusableInTouchMode(true);
                 setTask.setClickable(true);
+
+                setDescription.setEnabled(true);
+                setDescription.setFocusableInTouchMode(true);
+                setDescription.setClickable(true);
 
                 setDate.setEnabled(true);
                 setDate.setFocusableInTouchMode(true);

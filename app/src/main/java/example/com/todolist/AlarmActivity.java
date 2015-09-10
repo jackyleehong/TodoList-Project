@@ -1,4 +1,4 @@
-/*
+
 package example.com.todolist;
 
 import android.app.Activity;
@@ -63,4 +63,4 @@ public class AlarmActivity extends Activity {
     public void setAlarmText(String alarmText) {
         alarmTextView.setText(alarmText);
     }
-}*/
+}

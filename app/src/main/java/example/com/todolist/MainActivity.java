@@ -1,5 +1,6 @@
 package example.com.todolist;
 
+import android.app.ActionBar;
 import android.app.AlarmManager;
 import android.app.ListActivity;
 import android.app.PendingIntent;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
@@ -60,11 +62,15 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar actionBar = getActionBar();
+        actionBar.setLogo(R.drawable.todolist);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
         setContentView(R.layout.activity_main);
+
         reminderchk = (CheckBox)findViewById(R.id.reminderChk);
        // alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            updateList();
-
+        updateList();
 
 
 
@@ -86,7 +92,6 @@ public class MainActivity extends ListActivity {
             final ListView lv = (ListView)findViewById(android.R.id.list);
 
             ArrayAdapter adapter = new ArrayAdapter(this, R.layout.task_view,R.id.taskTextView,array_list);
-
 
             lv.setAdapter(adapter);
             if(dbh.getAllReminder()!= null) {
@@ -146,9 +151,9 @@ public class MainActivity extends ListActivity {
                         calendar.set(Calendar.MILLISECOND,0);
                         // calendar.setTimeInMillis(System.currentTimeMillis());
                         Log.d("time", hour + " " + min + " " + format + " ");
-                        Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-                        Log.d("What is intent", myIntent + "");
-                        pendingIntent = PendingIntent.getBroadcast(MainActivity.this,Integer.parseInt(id), myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        //Intent myIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+                        //Log.d("What is intent", myIntent + "");
+                        //pendingIntent = PendingIntent.getBroadcast(MainActivity.this,Integer.parseInt(id), myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
                         Log.d("id",id+"");
                         Log.d("What is pending intent", pendingIntent + "");
 
